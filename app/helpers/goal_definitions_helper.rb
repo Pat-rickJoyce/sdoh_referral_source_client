@@ -17,21 +17,97 @@ module GoalDefinitionsHelper
   def goal_category
     [
       {
+        code: "sdoh-category-unspecified",
+        display: "SDOH Category Unspecified"
+      },
+      {
         code: "food-insecurity",
-        display: "Food Insecurity",
-      },
-      {
-        code: "transportation-insecurity",
-        display: "Transportation Insecurity",
-      },
-      {
-        code: "homelessness",
-        display: "Homelessness",
+        display: "Food Insecurity"
       },
       {
         code: "housing-instability",
-        display: "Housing Instability",
+        display: "Housing Instability"
       },
+      {
+        code: "homelessness",
+        display: "Homelessness"
+      },
+      {
+        code: "inadequate-housing",
+        display: "Inadequate Housing"
+      },
+      {
+        code: "transportation-insecurity",
+        display: "Transportation Insecurity"
+      },
+      {
+        code: "financial-insecurity",
+        display: "Financial Insecurity"
+      },
+      {
+        code: "material-hardship",
+        display: "Material Hardship"
+      },
+      {
+        code: "educational-attainment",
+        display: "Educational Attainment"
+      },
+      {
+        code: "employment-status",
+        display: "Employment Status"
+      },
+      {
+        code: "veteran-status",
+        display: "Veteran Status"
+      },
+      {
+        code: "stress",
+        display: "Stress"
+      },
+      {
+        code: "social-connection",
+        display: "Social Connection"
+      },
+      {
+        code: "intimate-partner-violence",
+        display: "Intimate Partner Violence"
+      },
+      {
+        code: "elder-abuse",
+        display: "Elder Abuse"
+      },
+      {
+        code: "personal-health-literacy",
+        display: "Personal Health Literacy"
+      },
+      {
+        code: "health-insurance-coverage-status",
+        display: "Health Insurance Coverage Status"
+      },
+      {
+        code: "medical-cost-burden",
+        display: "Medical Cost Burden"
+      },
+      {
+        code: "digital-literacy",
+        display: "Digital Literacy"
+      },
+      {
+        code: "digital-access",
+        display: "Digital Access"
+      },
+      {
+        code: "utility-insecurity",
+        display: "Utility Insecurity"
+      },
+      {
+        code: "incarceration-status",
+        display: "Incarceration Status"
+      },
+      {
+        code: "language-access",
+        display: "Language Access"
+      }
     ]
   end
 

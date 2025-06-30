@@ -61,7 +61,7 @@ class Condition
   end
 
   def get_condition_code(code)
-    c = code&.coding&.find { |c| c&.system == "http://hl7.org/fhir/sid/icd-10-cm" }
+    c = code&.coding&.find { |c| c&.system == "http://hl7.org/fhir/sid/icd-10-cm" || c&.system == "http://snomed.info/sct"}
     c&.display ? "#{c.display} (#{c.code})" : c.code
   end
 end

@@ -30,9 +30,25 @@ export default class extends Controller {
   }
 
   handleSubmit(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-    const formElement = document.getElementById("goal-form");
-    formElement.submit(); // Manually submit the form
+    const errorDiv = document.getElementById("goals-errors");
+    errorDiv.style.display = "none";
+    errorDiv.textContent = "";
+    const hasCategory = this.categorySelectTarget.value.trim();
+    const hasDescription = this.descriptionSelectTarget.value.trim();
+    if( !hasCategory ){
+      event.preventDefault();
+      errorDiv.style.display = "block";
+      errorDiv.textContent = "Select a Category";
+    } else if( !hasDescription ) {
+      event.preventDefault();
+      errorDiv.style.display = "block";
+      errorDiv.textContent = "Select a Goal";
+    }
+    else{
+      event.preventDefault(); // Prevent the default form submission behavior
+      const formElement = document.getElementById("goal-form");
+      formElement.submit(); // Manually submit the form
+    }
   }
 
   updateDescriptionOptions(selectedCategory) {
@@ -42,7 +58,7 @@ export default class extends Controller {
     if (!selectedCategory) return;
 
     const descriptionOptions = this.descriptionOptionsJSON[selectedCategory] || [];
-
+    this.descriptionSelectTarget.innerHTML=`<option value="">Select a Goal</option>`;
     descriptionOptions.forEach(descriptionOption => {
       const opt = document.createElement("option");
       opt.value = descriptionOption[1];

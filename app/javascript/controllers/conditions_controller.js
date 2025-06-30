@@ -4,8 +4,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = [
     "categorySelect",
-    "icd10Combined",
-    "snomedCombined",
     "icd10Code",
     "icd10Desc",
     "snomedCode",
@@ -31,7 +29,7 @@ export default class extends Controller {
     else if( !hasICD && !hasSNOMED ){
       e.preventDefault();
       errorDiv.style.display = "block";
-      errorDiv.textContent = "Select either a SNOMED and/or ICD10 from options below";
+      errorDiv.textContent = "Select ICD10 and/or SNOMED";
     }
   }
 
@@ -52,64 +50,48 @@ export default class extends Controller {
       if(isICD10) {
         this.icd10CodeTarget.innerHTML+=`<option value="${code}">${code}</option>`;
         this.icd10DescTarget.innerHTML+=`<option value="${display}">${display}</option>`;
-        this.icd10CombinedTarget.innerHTML+=`<option value="${code}">${display} (${code}) [ICD10]</option>`;
       } else {
         this.snomedCodeTarget.innerHTML+=`<option value="${code}">${code}</option>`;
         this.snomedDescTarget.innerHTML+=`<option value="${display}">${display}</option>`;
-        this.snomedCombinedTarget.innerHTML+=`<option value="${code}">${display} (${code}) [SNOMED]</option>`;
       }
     });
   }
 
   disableOptions(e) {
-    this.icd10CombinedTarget.disabled = e;
-    this.snomedCombinedTarget.disabled = e;
     this.icd10CodeTarget.disabled = e;
     this.icd10DescTarget.disabled = e;
     this.snomedCodeTarget.disabled = e;
     this.snomedDescTarget.disabled = e;
 
-    this.icd10CombinedTarget.innerHTML=`<option value="">Select ICD-10 from options below</option>`;
-    this.snomedCombinedTarget.innerHTML=`<option value="">Select SNOMED-CT from options below</option>`
     this.icd10CodeTarget.innerHTML=`<option value="">Select a ICD-10 Code</option>`;
     this.icd10DescTarget.innerHTML=`<option value="">Select a ICD-10 Description</option>`
     this.snomedCodeTarget.innerHTML=`<option value="">Select a SNOMED Code</option>`
     this.snomedDescTarget.innerHTML=`<option value="">Select a SNOMED Description</option>`
   }
 
-  handleOptionChange(e){
+  handleCodeChange(e){
     const target = e.target;
     const code = target.value;
+    const match = this.items.find(i=>i[1] === code);
 
     if(target === this.icd10CodeTarget){
-      const match = this.items.find(i=>i[1] === code);
       this.icd10DescTarget.value=match ? match[0]: "";
-      this.icd10CombinedTarget.value=match ? match[1]: "";
-    }
-    else if(target === this.icd10DescTarget){
-      const match = this.items.find(i=>i[0] === code);
-      this.icd10CodeTarget.value=match ? match[1]: "";
-      this.icd10CombinedTarget.value=match ? match[1]: "";
     }
     else if(target === this.snomedCodeTarget){
-      const match = this.items.find(i=>i[1] === code);
       this.snomedDescTarget.value=match ? match[0]: "";
-      this.snomedCombinedTarget.value=match ? match[1]: "";
     }
-    else if(target === this.snomedDescTarget){
-      const match = this.items.find(i=>i[0] === code);
-      this.snomedCodeTarget.value=match ? match[1]: "";
-      this.snomedCombinedTarget.value=match ? match[1]: "";
-    }
-    else if(target === this.icd10CombinedTarget){
-      const match = this.items.find(i=>i[1] === code);
-      this.icd10DescTarget.value=match ? match[0]: "";
+  }
+
+  handleDescriptionChange(e){
+    const target = e.target;
+    const display = target.value;
+    const match = this.items.find(i=>i[0] === display);
+
+    if(target === this.icd10DescTarget){
       this.icd10CodeTarget.value=match ? match[1]: "";
     }
-    else if(target === this.snomedCombinedTarget){
-      const match = this.items.find(i=>i[1] === code);
+    else if(target === this.snomedDescTarget){
       this.snomedCodeTarget.value=match ? match[1]: "";
-      this.snomedDescTarget.value=match ? match[0]: "";
     }
   }
 

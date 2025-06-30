@@ -6,7 +6,7 @@ class GoalsController < ApplicationController
       goal = FHIR::Goal.new(
         meta: meta,
         lifecycleStatus: "active",
-        achievementStatus: achievement_status(params[:achievement_status]),
+        achievementStatus: (params[:achievement_status].present? && params[:achievement_status] != "Select the achievement status") ? achievement_status(params[:achievement_status])  : nil,
         category: category,
         description: description,
         subject: subject,
@@ -131,7 +131,7 @@ class GoalsController < ApplicationController
         {
           "system": "http://snomed.info/sct",
           "code": params[:description_code],
-          "display": GOAL_DESCRIPTIONS[params[:description_code]],
+          "display": description_options[params[:category]].find { | desc, c| c == params[:description_code]}&.first,
         },
       ],
     }
