@@ -9,6 +9,7 @@ module ApplicationHelper
   include GoalsHelper
   include GoalDefinitionsHelper
   include QuestionnaireHelper
+  include SocialRisksHelper
   include TasksHelper
   include ServiceRequestsHelper
 

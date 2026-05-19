@@ -13,6 +13,7 @@ class DashboardController < ApplicationController
     if patient_id.present?
       set_personal_characteristics
       set_conditions
+      set_social_risk_assessments
       set_goals
       set_tasks
       set_service_requests
@@ -78,6 +79,16 @@ class DashboardController < ApplicationController
     else
       Rails.logger.info("Failed to set conditions: #{result}")
 
+      flash[:warning] = result
+    end
+  end
+
+  def set_social_risk_assessments
+    success, result = fetch_social_risk_assessments
+    if success
+      @social_risk_assessments = result
+    else
+      Rails.logger.info("Failed to set social risk assessments: #{result}")
       flash[:warning] = result
     end
   end
