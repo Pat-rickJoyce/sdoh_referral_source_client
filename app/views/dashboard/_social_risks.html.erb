@@ -1,1 +1,136 @@
-Patient's social risk assessments will be displayed here.
+<% if social_risks.blank? %>
+  <p class="text-muted text-center py-4">No social risk assessments found for this patient.</p>
+<% else %>
+  <div class="social-risk-assessments d-flex gap-3 p-3" style="height: 600px;">
+
+    <%# ── Left Sidebar: Assessment List ─────────────────────────── %>
+    <div class="d-flex flex-column" style="width: 320px; min-width: 320px;">
+      <div class="mb-2">
+        <p class="text-muted small mb-0"><%= pluralize(social_risks.size, "assessment") %> on file</p>
+      </div>
+
+      <div class="list-group overflow-auto" style="flex: 1;">
+        <% social_risks.each_with_index do |assessment, index| %>
+          <%
+            is_active = index == 0
+          %>
+
+          <button type="button"
+                  class="social-risk-assessment-item list-group-item list-group-item-action <%= 'active' if is_active %> border-0 mb-2"
+                  data-bs-toggle="tab"
+                  data-bs-target="#assessment-<%= assessment.id %>"
+                  aria-selected="<%= is_active %>"
+                  role="tab">
+            <div class="d-flex flex-column gap-1">
+              <div class="fw-semibold" style="font-size: 14px;">
+                <%= assessment.display_questionnaire %>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="text-muted" style="font-size: 11px;">
+                  <i class="bi bi-calendar3 me-1"></i><%= assessment.display_date %>
+                </span>
+
+                <% if assessment.status.present? %>
+                  <% badge_class = assessment.status == "completed" ? "text-success bg-success" : "text-warning bg-warning" %>
+                  <span class="badge bg-opacity-10 <%= badge_class %>" style="font-size: 10px; font-weight: 500;">
+                    <%= assessment.status.titleize %>
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── Right Panel: Assessment Details ───────────────────────── %>
+    <div class="flex-fill overflow-auto">
+      <div class="tab-content h-100">
+        <% social_risks.each_with_index do |assessment, index| %>
+          <div class="tab-pane fade <%= 'show active' if index == 0 %> h-100"
+               id="assessment-<%= assessment.id %>"
+               role="tabpanel">
+
+            <div class="card border shadow-none h-100" style="border-color: rgba(0,0,0,.08) !important; border-radius: 10px; overflow: hidden;">
+
+              <%# ── Card header ──────────────────────────────────────────── %>
+              <div class="card-header bg-white d-flex justify-content-between align-items-start gap-3 py-3 px-4"
+                   style="border-bottom: 1px solid rgba(0,0,0,.07);">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <h6 class="mb-0 fw-semibold" style="font-size: 15px;">
+                      <%= assessment.display_questionnaire %>
+                    </h6>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="text-muted" style="font-size: 12px;">
+                      <i class="bi bi-calendar3 me-1"></i><%= assessment.display_date %>
+                    </span>
+
+                    <% if assessment.status.present? %>
+                      <% badge_class = assessment.status == "completed" ? "text-success bg-success" : "text-warning bg-warning" %>
+                      <span class="badge bg-opacity-10 <%= badge_class %>" style="font-size: 11px; font-weight: 500;">
+                        <%= assessment.status.titleize %>
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+
+                <%= link_to "#fhir-resource-modal-#{assessment.id}",
+                      class: "btn btn-sm btn-outline-secondary",
+                      style: "font-size: 11px; white-space: nowrap;",
+                      data: { bs_toggle: "modal" } do %>
+                  FHIR <i class="bi bi-box-arrow-up-right ms-1"></i>
+                <% end %>
+
+                <% content_for :modals do %>
+                  <%= render "shared/fhir_resource_modal", resource: assessment %>
+                <% end %>
+              </div>
+
+              <%# ── Sections ─────────────────────────────────────────────── %>
+              <div class="overflow-auto" style="flex: 1;">
+                <% assessment.sections.each do |section| %>
+                  <div class="border-bottom" style="border-color: rgba(0,0,0,.06) !important;">
+
+                    <%# Section label (only shown if not generic "Responses") %>
+                    <% if section[:title].present? && section[:title] != "Responses" %>
+                      <div class="px-4 py-2 bg-light text-uppercase fw-semibold text-secondary"
+                           style="font-size: 10px; letter-spacing: .06em; border-bottom: 1px solid rgba(0,0,0,.06);">
+                        <%= section[:title] %>
+                      </div>
+                    <% end %>
+
+                    <table class="table table-sm mb-0" style="table-layout: auto;">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="px-4 py-2 text-muted fw-normal" style="font-size: 11px; border-bottom: 1px solid rgba(0,0,0,.07);">Question</th>
+                          <th class="px-4 py-2 text-muted fw-normal" style="font-size: 11px; border-bottom: 1px solid rgba(0,0,0,.07);">Response</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% section[:answers].each do |answer| %>
+                          <tr style="border-color: rgba(0,0,0,.05);">
+                            <td class="px-4 py-2 text-secondary" style="font-size: 13px; word-wrap: break-word;">
+                              <%= answer[:text] || answer[:link_id]&.humanize %>
+                            </td>
+                            <td class="px-4 py-2 fw-semibold" style="font-size: 13px;">
+                              <%= answer[:value] %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                <% end %>
+              </div>
+
+            </div><!-- /.card -->
+          </div><!-- /.tab-pane -->
+        <% end %>
+      </div><!-- /.tab-content -->
+    </div><!-- /.flex-fill -->
+
+  </div><!-- /.d-flex -->
+<% end %>
