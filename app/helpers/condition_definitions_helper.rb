@@ -1,4 +1,4 @@
-# Helper constants valueset for Condition resource (health concern/ problem)
+# Helper constants value set for Condition resource (health concern/ problem)
 module ConditionDefinitionsHelper
   CONDITION_PROFILE = "http://hl7.org/fhir/us/sdoh-clinicalcare/StructureDefinition/SDOHCC-Condition".freeze
   CATEGORY_SDOH_CODE_SYSTEM = "http://hl7.org/fhir/us/sdoh-clinicalcare/CodeSystem/SDOHCC-CodeSystemTemporaryCodes".freeze
