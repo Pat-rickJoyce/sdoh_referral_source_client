@@ -98,6 +98,10 @@ module ConditionDefinitionsHelper
     {
       code: "language-access",
       display: "Language Access"
+    },
+    {
+      code: "protective-factor",
+      display: "Protective Factor"
     }
   ]
 
