@@ -12,27 +12,28 @@ export default class extends Controller {
     if (!badge) return;
 
     badge.textContent = "Checking…";
-    badge.classList.remove("bg-success", "bg-danger", "bg-warning", "bg-secondary");
+    badge.classList.remove("bg-success", "bg-danger", "bg-warning", "bg-info", "bg-secondary");
 
+    // Fail closed: anything not explicitly recognized reads as Unknown, never
+    // as Available.
+    const UNKNOWN = { text: "Unknown", cls: "bg-secondary" };
+    const STATUSES = {
+      "available": { text: "Available", cls: "bg-success" },
+      "at-capacity": { text: "At Capacity", cls: "bg-danger" },
+      "has-waitlist": { text: "Has Waitlist", cls: "bg-warning" },
+      "assessment-required": { text: "Assessment Required", cls: "bg-info" },
+      "unknown": UNKNOWN,
+    };
+
+    let status = UNKNOWN;
     try {
       const { capacity } = await fetch(`/organizations/${orgId}/check_capacity`).then(r => r.json());
-
-      if (capacity === "at-capacity") {
-        badge.textContent = "At Capacity";
-        badge.classList.add("bg-danger");
-      } else if (capacity === "has-waitlist") {
-        badge.textContent = "Has Waitlist";
-        badge.classList.add("bg-warning");
-      } else if (capacity === "unknown") {
-        badge.textContent = "Unknown";
-        badge.classList.add("bg-secondary");
-      } else {
-        badge.textContent = "Available";
-        badge.classList.add("bg-success");
-      }
+      status = STATUSES[capacity] || UNKNOWN;
     } catch (err) {
-      badge.textContent = "Unknown";
-      badge.classList.add("bg-secondary");
+      status = UNKNOWN;
     }
+
+    badge.textContent = status.text;
+    badge.classList.add(status.cls);
   }
 }

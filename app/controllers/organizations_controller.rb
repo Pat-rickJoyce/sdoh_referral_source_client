@@ -3,14 +3,16 @@ class OrganizationsController < ApplicationController
 
   CAPACITY_EXTENSION_URL = "http://hl7.org/fhir/us/sdoh-clinicalcare/StructureDefinition/SDOHCC-ExtensionHealthcareServiceCapacityStatus".freeze
 
-  # Maps codes from SDOHCC-CodeSystemTemporaryCodes (and legacy ad-hoc codes)
-  # to the statuses the front end understands.
+  # The four concepts bound to SDOHCC-ValueSetCapacityStatus, mapped to the
+  # statuses the front end understands. These are the only capacity codes in
+  # SDOHCC-CodeSystemTemporaryCodes: "at-capacity" and "no-capacity-has-waitlist"
+  # were never real codes and are deliberately absent, so off-spec data surfaces
+  # as "unknown" instead of being silently accepted.
   CAPACITY_CODE_MAP = {
     "capacity" => "available",
     "no-capacity" => "at-capacity",
-    "at-capacity" => "at-capacity",
-    "no-capacity-has-waitlist" => "has-waitlist",
-    "has-waitlist" => "has-waitlist",
+    "waitlist" => "has-waitlist",
+    "additional-assessment-required" => "assessment-required",
   }.freeze
 
   def check_capacity
@@ -24,7 +26,10 @@ class OrganizationsController < ApplicationController
 
     # Prefer the first service that actually carries a capacity extension
     extension = services.filter_map { |s| s.extension&.find { |e| e.url == CAPACITY_EXTENSION_URL } }.first
-    code = extension&.valueCode || extension&.valueCodeableConcept&.coding&.first&.code
+    # SDOHCC-ExtensionHealthcareServiceCapacityStatus is a complex extension:
+    # capacityStatus is 1..1 and Extension.value[x] is prohibited (0..0).
+    capacity_status_extension = extension&.extension&.find { |e| e.url == "capacityStatus" }
+    code = capacity_status_extension&.valueCodeableConcept&.coding&.first&.code
     capacity = CAPACITY_CODE_MAP[code] || "unknown"
     Rails.logger.info("[CHECK_CAPACITY] Raw code: #{code.inspect}, normalized capacity: #{capacity}")
 
