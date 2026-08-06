@@ -20,7 +20,10 @@ class OrganizationsController < ApplicationController
     org_id = params[:id]
     Rails.logger.info("[CHECK_CAPACITY] Org ID: #{org_id}")
 
-    bundle = client.search(FHIR::HealthcareService, search: { parameters: { organization: org_id } }).resource
+    search_parameters = { organization: org_id }
+    search_parameters["service-category"] = params[:category] if params[:category].present?
+
+    bundle = client.search(FHIR::HealthcareService, search: { parameters: search_parameters }).resource
     services = bundle&.entry&.map(&:resource)&.compact || []
     Rails.logger.info("[CHECK_CAPACITY] Found #{services.size} HealthcareService(s): #{services.map(&:id)}")
 
